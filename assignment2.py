@@ -1,6 +1,7 @@
 import random
 import sys
 from unicodedata import category
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 
 def process_file(filename, skip_header):
@@ -122,6 +123,16 @@ def random_word(hist):
     return random.choice(rdmdic)
 
 
+def sentiment_analysis():
+    """This functions provides a sentiment analysis of Leviathan."""
+    leviathan = ""
+    f = open('data/Leviathan.txt')
+    for line in f:
+        leviathan.append(line)
+    return leviathan
+    score = SentimentIntensityAnalyzer().polarity_scores(leviathan)
+
+
 def main():
     hist = process_file('data/Leviathan.txt', skip_header=True)
     print(hist)
@@ -143,6 +154,10 @@ def main():
     print("\n\nHere are some random words from the book")
     for i in range(100):
         print(random_word(hist), end=' ')
+    
+    score = SentimentIntensityAnalyzer().polarity_scores(leviathan)
+    print("Summary Statistics of sentimental analysis of Leviathan is:")
+    print(score)
 
 
 if __name__ == '__main__':
