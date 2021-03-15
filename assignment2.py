@@ -56,11 +56,6 @@ def process_file(filename, skip_header):
     # via: https://stackoverflow.com/questions/60983836/
     # complete-set-of-punctuation-marks-for-python-not-just-ascii
 
-    stps = ''.join([
-        chr(i) for i in range(sys.maxunicode)
-        if category(chr(i)).startswith("P")
-    ])
-
     for line in fp:
         if line.startswith('*** END OF THIS PROJECT'):
             break
@@ -76,7 +71,7 @@ def process_file(filename, skip_header):
 
             # update the dictionary
             hist[word] = hist.get(word, 0) + 1
-
+    print(hist, "救命啊")
     return hist
 
 
