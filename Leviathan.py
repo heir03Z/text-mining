@@ -124,10 +124,21 @@ def random_word(hist):
     """Chooses a random word from a histogram.
     The probability of each word is proportional to its frequency.
     """
-    rdmdic = []
+    # rdmdic = []
+    # for word, freq in hist.items():
+    #     rdmdic.extend([word] * freq)
+    # return random.choice(rdmdic)
+    words = []
+    freqs = []
+    total_freq = 0
     for word, freq in hist.items():
-        rdmdic.extend([word] * freq)
-    return random.choice(rdmdic)
+        total_freq += freq
+        words.append(word)
+        freqs.append(total_freq)
+    
+    x = random.randint(0, total_freq - 1)
+    index = bisect(freqs, x)
+    return words[index]
 
 
 def pair_sim(f):
