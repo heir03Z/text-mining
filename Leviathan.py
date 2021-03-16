@@ -2,6 +2,13 @@ import random
 import sys
 from unicodedata import category
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+import json
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+from sklearn.manifold import MDS
+import matplotlib.pyplot as plt
+import markovify
 
 
 def process_file(filename, skip_header):
@@ -55,9 +62,9 @@ def skip_gutenberg_header(fp):
 
 
 hist = process_file('data/Leviathan.txt', skip_header=True)
-words = process_file('data/words.txt', skip_header=False)
-print(hist)
-print(words)
+words = process_file('data/alice.txt', skip_header=False)
+# print(hist)
+# print(words)
 
 
 def total_words(hist):
@@ -123,14 +130,23 @@ def random_word(hist):
     return random.choice(rdmdic)
 
 
-def sentiment_analysis():
-    """This functions provides a sentiment analysis of Leviathan."""
-    leviathan = ""
-    f = open('data/Leviathan.txt')
-    for line in f:
-        leviathan.append(line)
-    return leviathan
-    score = SentimentIntensityAnalyzer().polarity_scores(leviathan)
+def pair_sim(f):
+    f = TfidfVectorizer().fit_transform(hist.keys())
+    ans = cosine_similarity(f)
+    return ans
+
+
+# Below uses markovify to generate random sentenses.
+with open("data/Leviathan.txt", "r", encoding='utf-8') as f:
+    text = f.read()
+
+textmodel = markovify.Text(text)
+
+print("Here are 2 long, 5 short random sentences generated from origin text")
+for i in range(2):
+    print(textmodel.make_sentence())
+for sentense in range(5):
+    print(textmodel.make_short_sentence(200))
 
 
 def main():
@@ -143,9 +159,9 @@ def main():
     for freq, word in t[0:10]:
         print(word, '\t', freq)
 
-    print("The words in the book that aren't in the word list are:")
+    print("The words in Leviathan that aren't in Alice are:")
 
-    words = process_file('data/words.txt', skip_header=False)
+    words = process_file('data/alice.txt', skip_header=False)
     diff = subtract(hist, words)
     for word in diff:
         print(word, end=' ')
@@ -154,11 +170,37 @@ def main():
     print("\n\nHere are some random words from the book")
     for i in range(100):
         print(random_word(hist), end=' ')
-    
-    score = SentimentIntensityAnalyzer().polarity_scores(leviathan)
-    print("Summary Statistics of sentimental analysis of Leviathan is:")
-    print(score)
+
+    leviath = json.dumps(hist)
+    score = SentimentIntensityAnalyzer().polarity_scores(leviath)
+    print("Sentiment analysis of Leviathanis:", score)
+
+    print(pair_sim(hist))
+
+    # Below uses markovify to generate random sentenses.
+    with open("data/Leviathan.txt", "r", encoding='utf-8') as f:
+        text = f.read()
+
+    textmodel = markovify.Text(text)
+
+    print("Here are 2 long, 5 short random sentences generated from origin")
+    for i in range(2):
+        print(textmodel.make_sentence())
+    for sentense in range(5):
+        print(textmodel.make_short_sentence(200))
 
 
 if __name__ == '__main__':
     main()
+
+# Here is text similarity with very wired result which will be
+# discussed in assignment report.
+# S = np.asarray(pair_sim(hist))
+# dissimilarities = 1 - S
+# coord = MDS(dissimilarity='precomputed').fit_transform(dissimilarities)
+
+# plt.scatter(coord[:, 0], coord[:, 1])
+# for i in range(coord.shape[0]):
+#     plt.annotate(str(i), (coord[i, :]))
+
+# plt.show()
