@@ -80,7 +80,7 @@ Babson College
 
 Babson College is a private business school in Wellesley, Massachusetts. Established in 1919, its central focus is on entrepreneurship education. It was founded by Roger W. Babson as an all-male business institute but is now coeducational.
 ...
-```
+```'
 
 See more properties for a page in documentation(<https://pymediawiki.readthedocs.io/en/latest/quickstart.html#other-properties>).
 
